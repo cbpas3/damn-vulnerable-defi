@@ -13,7 +13,7 @@ import "../../climber/ClimberTimelock.sol";
  * @dev To be deployed behind a proxy following the UUPS pattern. Upgrades are to be triggered by the owner.
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
  */
-contract ClimberVault is Initializable, OwnableUpgradeable, UUPSUpgradeable {
+contract ClimberVaultUpgrade is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 
     uint256 public constant WITHDRAWAL_LIMIT = 1 ether;
     uint256 public constant WAITING_PERIOD = 15 days;
